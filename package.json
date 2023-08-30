@@ -1,0 +1,17 @@
+{
+  "name": "Billed",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/HerveRisse/Billed.git",
+  "author": "Hervé <herve.risse91@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "jest": "^29.6.1",
+    "jest-cli": "^29.6.1",
+    "jest-environment-jsdom": "^29.6.1"
+  },
+  "jest": {
+    "testEnvironment": "jsdom",
+    "verbose": true
+  }
+}
