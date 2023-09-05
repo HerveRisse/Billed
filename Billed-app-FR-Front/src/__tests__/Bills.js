@@ -10,6 +10,9 @@ import { ROUTES, ROUTES_PATH } from "../constants/routes.js";
 import { localStorageMock } from "../__mocks__/localStorage.js";
 import '@testing-library/jest-dom/extend-expect';
 
+import mockStore from "../__mocks__/store"
+jest.mock("../app/store", () => mockStore)
+
 
 import router from "../app/Router.js";
 
@@ -113,7 +116,7 @@ describe("Given I am connected as an employee", () => {
           window.localStorage.setItem('user', JSON.stringify({
             type: 'Employee'
           }))
-          document.body.innerHTML = BillsUI(bills)
+          document.body.innerHTML = BillsUI({ data: bills })
           const onNavigate = (pathname) => {
             document.body.innerHTML = ROUTES({ pathname })
           }
@@ -122,18 +125,68 @@ describe("Given I am connected as an employee", () => {
             document, onNavigate, store, bills, localStorage: window.localStorage
           })
 
-          const handleClickIconEye = jest.fn((eyeIcon) => myBills.handleClickIconEye(eyeIcon))
-          const eyeIcons = await waitFor(() => screen.getAllByTestId('icon-eye'));
-          eyeIcons.forEach((eyeIcon) => {
-            eyeIcon.addEventListener('click', handleClickIconEye(eyeIcon))
-            userEvent.click(eyeIcon)
-            expect(handleClickIconEye).toHaveBeenCalled()
+          const handleClickIconEye = jest.fn(myBills.handleClickIconEye);
+          const iconEyes = screen.getAllByTestId("icon-eye");
+  
+          const modale = document.getElementById("modaleFile");
+          //TypeError: $(...).modal is not a function
+          $.fn.modal = jest.fn(() => modale.classList.add("show")); //mock de la modale Bootstrap
+  
+          iconEyes.forEach(iconEye => {
+            iconEye.addEventListener("click", () => handleClickIconEye(iconEye));
+            fireEvent.click(iconEye);
+            expect(handleClickIconEye).toHaveBeenCalled();
+            expect(modale).toHaveClass("show");
           });
-
-          const modale = screen.getByTestId('modaleFileEmployee')
-          expect(modale).toBeTruthy()
-          expect(modale).toBeVisible()
         })
     })
     
+    describe("When an error occurs on API", () => {
+        beforeEach(() => {
+          jest.spyOn(mockStore, "bills")
+          Object.defineProperty(
+            window,
+            'localStorage',
+            { value: localStorageMock }
+          )
+          window.localStorage.setItem('user', JSON.stringify({
+            type: 'Employee',
+            email: "a@a"
+          }))
+          const root = document.createElement("div")
+          root.setAttribute("id", "root")
+          document.body.appendChild(root)
+          router()
+        })
+        test("fetches bills from an API and fails with 404 message error", async () => {
+  
+          mockStore.bills.mockImplementationOnce(() => {
+            return {
+              list: () => {
+                return Promise.reject(new Error("Erreur 404"))
+              }
+            }
+          })
+          window.onNavigate(ROUTES_PATH.Bills)
+          await new Promise(process.nextTick);
+          const message = screen.getByText(/Erreur 404/)
+          expect(message).toBeTruthy()
+        })
+  
+        test("fetches messages from an API and fails with 500 message error", async () => {
+  
+          mockStore.bills.mockImplementationOnce(() => {
+            return {
+              list: () => {
+                return Promise.reject(new Error("Erreur 500"))
+              }
+            }
+          })
+  
+          window.onNavigate(ROUTES_PATH.Bills)
+          await new Promise(process.nextTick);
+          const message = screen.getByText(/Erreur 500/)
+          expect(message).toBeTruthy()
+        })
+      })
 })
