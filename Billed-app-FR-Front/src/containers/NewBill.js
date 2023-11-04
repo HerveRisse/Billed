@@ -19,6 +19,8 @@ export default class NewBill {
   }
 
   fileValidation = file => {
+    console.log("toto")
+    console.log('File contents:', file);
     // On verifie le type de fichier à uploader
     const fileTypes = ["image/jpeg", "image/jpg", "image/png"];
     if (!fileTypes.includes(file.type)) {
