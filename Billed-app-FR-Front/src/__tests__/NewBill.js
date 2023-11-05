@@ -2,14 +2,16 @@
  * @jest-environment jsdom
  */
 
-import { fireEvent, screen, waitFor } from "@testing-library/dom"
+import { fireEvent, screen } from "@testing-library/dom"
 import NewBillUI from "../views/NewBillUI.js"
 import NewBill from "../containers/NewBill.js"
 import { ROUTES, ROUTES_PATH } from "../constants/routes.js";
 import { localStorageMock } from "../__mocks__/localStorage.js";
 import mockedBills from "../__mocks__/store.js";
-import router from "../app/Router.js";
 import { bills } from "../fixtures/bills.js";
+import mockStore from "../__mocks__/store"
+jest.mock("../app/store", () => mockStore)
+import router from "../app/Router.js";
 
 describe("Given I am connected as an employee", () => {
     describe("When I navigate to NewBill Page", () => {

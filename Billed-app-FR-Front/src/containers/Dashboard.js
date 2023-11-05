@@ -154,7 +154,7 @@ export default class {
     }
 
     bills.forEach(bill => {
-      $(`#open-bill${bill.id}`).off("click"); // On remove l'eventListener existant avant d'en ajouter un
+      $(`#open-bill${bill.id}`).off("click");
       $(`#open-bill${bill.id}`).on("click", e => {
         this.handleEditTicket(e, bill, bills);
       });
