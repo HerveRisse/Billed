@@ -47,7 +47,7 @@ export default class NewBill {
     formData.append("email", email);
 
     // si type de fichier incorrect, on ne l'envoie pas vers le store
-    this.fileName && this.fileValidation(file) &&
+    this.fileValidation(file) &&
       this.store
         .bills()
         .create({

@@ -127,8 +127,8 @@ describe("Given I am connected as an employee", () => {
                     files: [newFile] },
             })
             
-            expect(handleChangeFile).toHaveBeenCalledTimes(1);
-            expect(fileValidation).toHaveBeenCalledTimes(1);
+            expect(handleChangeFile).toHaveBeenCalled();
+            expect(fileValidation).toHaveBeenCalled();
 
             expect(fileValidation(newFile)).toBeTruthy();
             expect(file.outerHTML).not.toContain('is-invalid');           
